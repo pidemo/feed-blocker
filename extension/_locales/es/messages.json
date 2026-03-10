@@ -1,0 +1,68 @@
+{
+  "extName": {
+    "message": "Feed Blocker"
+  },
+  "extDescription": {
+    "message": "Bloquea el feed y las recomendaciones de YouTube. Reemplaza el feed con una lista de tareas sincronizada. Programa el bloqueo o ponlo en pausa."
+  },
+
+  "mode": { "message": "Modo" },
+  "modeAlways": { "message": "Siempre" },
+  "modeSchedule": { "message": "Horario" },
+  "modeOff": { "message": "Desactivado" },
+
+  "weekdays": { "message": "Días laborables" },
+  "weekends": { "message": "Fines de semana" },
+  "timeTo": { "message": "a" },
+  "blockOnWeekends": { "message": "Bloquear fines de semana" },
+  "weekdayStartTime": { "message": "Hora de inicio en días laborables" },
+  "weekdayEndTime": { "message": "Hora de fin en días laborables" },
+  "weekendStartTime": { "message": "Hora de inicio en fines de semana" },
+  "weekendEndTime": { "message": "Hora de fin en fines de semana" },
+
+  "blockEndScreen": { "message": "Bloquear sugerencias de fin de vídeo" },
+
+  "snooze": { "message": "Pausa" },
+  "snooze15m": { "message": "15m" },
+  "snooze30m": { "message": "30m" },
+  "snooze1h": { "message": "1h" },
+  "snooze2h": { "message": "2h" },
+  "cancelSnooze": { "message": "Cancelar pausa" },
+
+  "statusBlocking": { "message": "Bloqueando" },
+  "statusOff": { "message": "Desactivado" },
+  "snoozedForHM": {
+    "message": "En pausa por $hours$h $minutes$m",
+    "placeholders": {
+      "hours": { "content": "$1" },
+      "minutes": { "content": "$2" }
+    }
+  },
+  "snoozedForM": {
+    "message": "En pausa por $minutes$m",
+    "placeholders": {
+      "minutes": { "content": "$1" }
+    }
+  },
+  "snoozedUntil": {
+    "message": "En pausa hasta $time$",
+    "placeholders": {
+      "time": { "content": "$1" }
+    }
+  },
+
+  "todoHeading": { "message": "¿Qué viniste a hacer?" },
+  "todoPlaceholder": { "message": "Añadir una tarea..." },
+  "todoAdd": { "message": "Añadir" },
+  "todoDelete": { "message": "Eliminar" },
+  "todoCounter": {
+    "message": "$done$ de $total$ completadas",
+    "placeholders": {
+      "done": { "content": "$1" },
+      "total": { "content": "$2" }
+    }
+  },
+
+  "madeBy": { "message": "Hecho con ♥︎ por Pierre de Montalte" },
+  "buyMeACoffee": { "message": "Invítame a un café" }
+}

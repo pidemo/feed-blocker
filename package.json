@@ -1,0 +1,10 @@
+{
+  "name": "feed-blocker",
+  "private": true,
+  "scripts": {
+    "screenshots": "node dev-assets/scripts/capture-screenshots.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}

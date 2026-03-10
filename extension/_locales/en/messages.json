@@ -1,0 +1,68 @@
+{
+  "extName": {
+    "message": "Feed Blocker"
+  },
+  "extDescription": {
+    "message": "Block YouTube's feed and recommendations. Replace the feed with a synced to-do list. Schedule blocking or snooze anytime."
+  },
+
+  "mode": { "message": "Mode" },
+  "modeAlways": { "message": "Always" },
+  "modeSchedule": { "message": "Schedule" },
+  "modeOff": { "message": "Off" },
+
+  "weekdays": { "message": "Weekdays" },
+  "weekends": { "message": "Weekends" },
+  "timeTo": { "message": "to" },
+  "blockOnWeekends": { "message": "Block on weekends" },
+  "weekdayStartTime": { "message": "Weekday start time" },
+  "weekdayEndTime": { "message": "Weekday end time" },
+  "weekendStartTime": { "message": "Weekend start time" },
+  "weekendEndTime": { "message": "Weekend end time" },
+
+  "blockEndScreen": { "message": "Block end-of-video suggestions" },
+
+  "snooze": { "message": "Snooze" },
+  "snooze15m": { "message": "15m" },
+  "snooze30m": { "message": "30m" },
+  "snooze1h": { "message": "1h" },
+  "snooze2h": { "message": "2h" },
+  "cancelSnooze": { "message": "Cancel snooze" },
+
+  "statusBlocking": { "message": "Blocking" },
+  "statusOff": { "message": "Off" },
+  "snoozedForHM": {
+    "message": "Snoozed for $hours$h $minutes$m",
+    "placeholders": {
+      "hours": { "content": "$1" },
+      "minutes": { "content": "$2" }
+    }
+  },
+  "snoozedForM": {
+    "message": "Snoozed for $minutes$m",
+    "placeholders": {
+      "minutes": { "content": "$1" }
+    }
+  },
+  "snoozedUntil": {
+    "message": "Snoozed until $time$",
+    "placeholders": {
+      "time": { "content": "$1" }
+    }
+  },
+
+  "todoHeading": { "message": "What are you here to do?" },
+  "todoPlaceholder": { "message": "Add a task..." },
+  "todoAdd": { "message": "Add" },
+  "todoDelete": { "message": "Delete" },
+  "todoCounter": {
+    "message": "$done$ of $total$ done",
+    "placeholders": {
+      "done": { "content": "$1" },
+      "total": { "content": "$2" }
+    }
+  },
+
+  "madeBy": { "message": "Made with ♥︎ by Pierre de Montalte" },
+  "buyMeACoffee": { "message": "Buy me a Coffee" }
+}

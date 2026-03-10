@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed Blocker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <header class="header">
+      <div class="header-title">
+        <img src="../icons/icon48.png" alt="" class="header-icon" width="22" height="22">
+        <h1 data-i18n="extName">Feed Blocker</h1>
+      </div>
+      <div class="header-right">
+        <span id="status-badge" class="status-badge">...</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <label class="section-label" data-i18n="mode">Mode</label>
+      <div class="mode-buttons">
+        <button type="button" class="mode-btn active" data-mode="always" data-i18n="modeAlways">Always</button>
+        <button type="button" class="mode-btn" data-mode="schedule" data-i18n="modeSchedule">Schedule</button>
+        <button type="button" class="mode-btn" data-mode="off" data-i18n="modeOff">Off</button>
+      </div>
+    </section>
+
+    <section id="schedule-section" class="section schedule-section hidden">
+      <label class="section-label" data-i18n="weekdays">Weekdays</label>
+      <div class="time-row">
+        <select id="weekday-start" class="time-select" aria-label="Weekday start time" data-i18n-aria-label="weekdayStartTime"></select>
+        <span class="time-sep" data-i18n="timeTo">to</span>
+        <select id="weekday-end" class="time-select" aria-label="Weekday end time" data-i18n-aria-label="weekdayEndTime"></select>
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" id="weekend-enabled">
+        <span data-i18n="blockOnWeekends">Block on weekends</span>
+      </label>
+      <div id="weekend-times" class="weekend-times">
+        <label class="section-label" data-i18n="weekends">Weekends</label>
+        <div class="time-row">
+          <select id="weekend-start" class="time-select" aria-label="Weekend start time" data-i18n-aria-label="weekendStartTime"></select>
+          <span class="time-sep" data-i18n="timeTo">to</span>
+          <select id="weekend-end" class="time-select" aria-label="Weekend end time" data-i18n-aria-label="weekendEndTime"></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <label class="toggle-row">
+        <input type="checkbox" id="block-end-screen">
+        <span data-i18n="blockEndScreen">Block end-of-video suggestions</span>
+      </label>
+    </section>
+
+    <section class="section">
+      <label class="section-label" data-i18n="snooze">Snooze</label>
+      <div id="snooze-buttons" class="snooze-buttons">
+        <button type="button" class="snooze-btn" data-minutes="15" data-i18n="snooze15m">15m</button>
+        <button type="button" class="snooze-btn" data-minutes="30" data-i18n="snooze30m">30m</button>
+        <button type="button" class="snooze-btn" data-minutes="60" data-i18n="snooze1h">1h</button>
+        <button type="button" class="snooze-btn" data-minutes="120" data-i18n="snooze2h">2h</button>
+      </div>
+      <div id="snooze-active" class="snooze-active hidden">
+        <span id="snooze-remaining">...</span>
+        <button type="button" id="cancel-snooze" class="cancel-btn" data-i18n="cancelSnooze">Cancel snooze</button>
+      </div>
+    </section>
+
+    <section class="support-section">
+      <a href="https://pierredemontalte.dev" target="_blank" rel="noopener noreferrer" class="support-link" data-i18n="madeBy">Made with ♥︎ by Pierre de Montalte</a>
+      <a href="https://buymeacoffee.com/pierredemontalte" target="_blank" rel="noopener noreferrer" class="support-link" data-i18n="buyMeACoffee">Buy me a Coffee</a>
+    </section>
+  </div>
+  <script src="../shared/i18n.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Local dev assets (store-assets, scripts, checklists — keep locally only)
+dev-assets/
+
+# Build / packaging (if added later)
+dist/
+*.zip

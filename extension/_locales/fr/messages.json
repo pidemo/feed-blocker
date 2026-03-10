@@ -1,0 +1,68 @@
+{
+  "extName": {
+    "message": "Feed Blocker"
+  },
+  "extDescription": {
+    "message": "Bloquez le fil d'accueil et les recommandations YouTube. Remplacez le fil par une liste de tâches synchronisée. Planifiez le blocage ou mettez-le en pause."
+  },
+
+  "mode": { "message": "Mode" },
+  "modeAlways": { "message": "Toujours" },
+  "modeSchedule": { "message": "Horaires" },
+  "modeOff": { "message": "Désactivé" },
+
+  "weekdays": { "message": "Semaine" },
+  "weekends": { "message": "Week-end" },
+  "timeTo": { "message": "à" },
+  "blockOnWeekends": { "message": "Bloquer les week-ends" },
+  "weekdayStartTime": { "message": "Heure de début en semaine" },
+  "weekdayEndTime": { "message": "Heure de fin en semaine" },
+  "weekendStartTime": { "message": "Heure de début le week-end" },
+  "weekendEndTime": { "message": "Heure de fin le week-end" },
+
+  "blockEndScreen": { "message": "Bloquer les suggestions de fin de vidéo" },
+
+  "snooze": { "message": "Pause" },
+  "snooze15m": { "message": "15m" },
+  "snooze30m": { "message": "30m" },
+  "snooze1h": { "message": "1h" },
+  "snooze2h": { "message": "2h" },
+  "cancelSnooze": { "message": "Annuler la pause" },
+
+  "statusBlocking": { "message": "Actif" },
+  "statusOff": { "message": "Désactivé" },
+  "snoozedForHM": {
+    "message": "En pause pour $hours$h $minutes$m",
+    "placeholders": {
+      "hours": { "content": "$1" },
+      "minutes": { "content": "$2" }
+    }
+  },
+  "snoozedForM": {
+    "message": "En pause pour $minutes$m",
+    "placeholders": {
+      "minutes": { "content": "$1" }
+    }
+  },
+  "snoozedUntil": {
+    "message": "En pause jusqu'à $time$",
+    "placeholders": {
+      "time": { "content": "$1" }
+    }
+  },
+
+  "todoHeading": { "message": "Pourquoi êtes-vous ici ?" },
+  "todoPlaceholder": { "message": "Ajouter une tâche..." },
+  "todoAdd": { "message": "Ajouter" },
+  "todoDelete": { "message": "Supprimer" },
+  "todoCounter": {
+    "message": "$done$ sur $total$ terminées",
+    "placeholders": {
+      "done": { "content": "$1" },
+      "total": { "content": "$2" }
+    }
+  },
+
+  "madeBy": { "message": "Fait avec ♥︎ par Pierre de Montalte" },
+  "buyMeACoffee": { "message": "Offrez-moi un café" }
+}
