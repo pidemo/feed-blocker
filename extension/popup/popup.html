@@ -20,14 +20,14 @@
 
     <section class="section">
       <label class="section-label" data-i18n="mode">Mode</label>
-      <div class="mode-buttons">
-        <button type="button" class="mode-btn active" data-mode="always" data-i18n="modeAlways">Always</button>
-        <button type="button" class="mode-btn" data-mode="schedule" data-i18n="modeSchedule">Schedule</button>
-        <button type="button" class="mode-btn" data-mode="off" data-i18n="modeOff">Off</button>
+      <div class="mode-buttons" role="group">
+        <button type="button" class="mode-btn active" data-mode="always" data-i18n="modeAlways" aria-pressed="true">Always</button>
+        <button type="button" class="mode-btn" data-mode="schedule" data-i18n="modeSchedule" aria-pressed="false">Schedule</button>
+        <button type="button" class="mode-btn" data-mode="off" data-i18n="modeOff" aria-pressed="false">Off</button>
       </div>
     </section>
 
-    <section id="schedule-section" class="section schedule-section hidden">
+    <section id="schedule-section" class="section schedule-section hidden" aria-hidden="true">
       <label class="section-label" data-i18n="weekdays">Weekdays</label>
       <div class="time-row">
         <select id="weekday-start" class="time-select" aria-label="Weekday start time" data-i18n-aria-label="weekdayStartTime"></select>
@@ -63,7 +63,7 @@
         <button type="button" class="snooze-btn" data-minutes="60" data-i18n="snooze1h">1h</button>
         <button type="button" class="snooze-btn" data-minutes="120" data-i18n="snooze2h">2h</button>
       </div>
-      <div id="snooze-active" class="snooze-active hidden">
+      <div id="snooze-active" class="snooze-active hidden" aria-hidden="true">
         <span id="snooze-remaining">...</span>
         <button type="button" id="cancel-snooze" class="cancel-btn" data-i18n="cancelSnooze">Cancel snooze</button>
       </div>

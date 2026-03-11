@@ -65,21 +65,28 @@
   }
 
   function updateWeekendTimesVisibility() {
-    weekendTimes.classList.toggle("collapsed", !weekendEnabled.checked);
+    const isCollapsed = !weekendEnabled.checked;
+    weekendTimes.classList.toggle("collapsed", isCollapsed);
+    weekendTimes.setAttribute("aria-hidden", String(isCollapsed));
   }
 
   function loadSettings() {
     chrome.storage.sync.get(
       [STORAGE_KEYS.MODE, STORAGE_KEYS.SCHEDULE, STORAGE_KEYS.BLOCK_END_SCREEN],
       (data) => {
+        if (chrome.runtime.lastError) return;
         const mode = data[STORAGE_KEYS.MODE] ?? DEFAULTS.mode;
         const schedule = data[STORAGE_KEYS.SCHEDULE] ?? DEFAULTS.schedule;
 
         modeBtns.forEach((btn) => {
-          btn.classList.toggle("active", btn.dataset.mode === mode);
+          const isActive = btn.dataset.mode === mode;
+          btn.classList.toggle("active", isActive);
+          btn.setAttribute("aria-pressed", String(isActive));
         });
 
-        scheduleSection.classList.toggle("hidden", mode !== "schedule");
+        const scheduleHidden = mode !== "schedule";
+        scheduleSection.classList.toggle("hidden", scheduleHidden);
+        scheduleSection.setAttribute("aria-hidden", String(scheduleHidden));
 
         weekdayStart.value = roundTimeToNearest15(schedule.weekday?.start ?? "08:00");
         weekdayEnd.value = roundTimeToNearest15(schedule.weekday?.end ?? "17:00");
@@ -95,10 +102,12 @@
 
   function loadSnoozeAndUpdateStatus() {
     chrome.storage.local.get(SNOOZE_KEY, (data) => {
+      if (chrome.runtime.lastError) return;
       const snooze = data[SNOOZE_KEY] ?? SNOOZE_DEFAULTS;
       chrome.storage.sync.get(
         [STORAGE_KEYS.MODE, STORAGE_KEYS.SCHEDULE],
         (syncData) => {
+          if (chrome.runtime.lastError) return;
           const settings = {
             mode: syncData[STORAGE_KEYS.MODE] ?? DEFAULTS.mode,
             schedule: syncData[STORAGE_KEYS.SCHEDULE] ?? DEFAULTS.schedule,
@@ -107,7 +116,9 @@
 
           const isSnoozed = snooze.active && snooze.until && snooze.until > Date.now();
           snoozeButtons.classList.toggle("hidden", isSnoozed);
+          snoozeButtons.setAttribute("aria-hidden", String(isSnoozed));
           snoozeActive.classList.toggle("hidden", !isSnoozed);
+          snoozeActive.setAttribute("aria-hidden", String(!isSnoozed));
 
           if (isSnoozed) {
             const remaining = Math.ceil((snooze.until - Date.now()) / 60000);
@@ -142,6 +153,7 @@
 
   function saveSchedule() {
     chrome.storage.sync.get(STORAGE_KEYS.SCHEDULE, (data) => {
+      if (chrome.runtime.lastError) return;
       const schedule = data[STORAGE_KEYS.SCHEDULE] ?? DEFAULTS.schedule;
       schedule.weekday = {
         start: weekdayStart.value,
@@ -159,8 +171,14 @@
   modeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       const mode = btn.dataset.mode;
-      modeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
-      scheduleSection.classList.toggle("hidden", mode !== "schedule");
+      modeBtns.forEach((b) => {
+        const isActive = b.dataset.mode === mode;
+        b.classList.toggle("active", isActive);
+        b.setAttribute("aria-pressed", String(isActive));
+      });
+      const scheduleHidden = mode !== "schedule";
+      scheduleSection.classList.toggle("hidden", scheduleHidden);
+      scheduleSection.setAttribute("aria-hidden", String(scheduleHidden));
       saveMode(mode);
       loadSnoozeAndUpdateStatus();
     });
@@ -184,15 +202,16 @@
       const minutes = parseInt(btn.dataset.minutes, 10);
       chrome.runtime.sendMessage(
         { action: "startSnooze", durationMinutes: minutes },
-        () => loadSnoozeAndUpdateStatus()
+        () => { void chrome.runtime.lastError; loadSnoozeAndUpdateStatus(); }
       );
     });
   });
 
   cancelSnooze.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "cancelSnooze" }, () =>
-      loadSnoozeAndUpdateStatus()
-    );
+    chrome.runtime.sendMessage({ action: "cancelSnooze" }, () => {
+      void chrome.runtime.lastError;
+      loadSnoozeAndUpdateStatus();
+    });
   });
 
   loadSettings();

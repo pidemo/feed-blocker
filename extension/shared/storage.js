@@ -64,7 +64,15 @@ function resolveBlockingState(settings, snooze) {
 
     const startParts = slot.start.split(":").map(Number);
     const endParts = slot.end.split(":").map(Number);
-    if (startParts.length < 2 || endParts.length < 2 || isNaN(startParts[0]) || isNaN(endParts[0])) {
+    if (
+      startParts.length < 2 || endParts.length < 2 ||
+      isNaN(startParts[0]) || isNaN(startParts[1]) ||
+      isNaN(endParts[0]) || isNaN(endParts[1]) ||
+      startParts[0] < 0 || startParts[0] > 23 ||
+      startParts[1] < 0 || startParts[1] > 59 ||
+      endParts[0] < 0 || endParts[0] > 23 ||
+      endParts[1] < 0 || endParts[1] > 59
+    ) {
       return { blocking: false, reason: "schedule" };
     }
     const [startH, startM] = startParts;

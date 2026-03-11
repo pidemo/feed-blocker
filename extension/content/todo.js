@@ -6,11 +6,21 @@ const FBTodo = (function () {
   const TODO_ID = "fb-todo";
   const STORAGE_KEY = STORAGE_KEYS.TODOS;
 
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === "sync" && changes[STORAGE_KEY] && document.getElementById("fb-todo-list")) {
-      render(changes[STORAGE_KEY].newValue ?? []);
-    }
-  });
+  let _injectTimer = null;
+  let _storageListener = null;
+  let _darkObserver = null;
+  let _writeQueue = Promise.resolve();
+
+  function _isContextValid() {
+    return !!(chrome.runtime && chrome.runtime.id);
+  }
+
+  function _enqueueWrite(fn) {
+    _writeQueue = _writeQueue.then(() => new Promise((resolve) => {
+      if (!_isContextValid()) { resolve(); return; }
+      fn(resolve);
+    }));
+  }
 
   function getContainer() {
     const feed = document.querySelector('ytd-browse[page-subtype="home"] ytd-rich-grid-renderer');
@@ -41,7 +51,7 @@ const FBTodo = (function () {
 
     const delBtn = document.createElement("button");
     delBtn.className = "fb-todo-delete";
-    delBtn.textContent = "×";
+    delBtn.textContent = "\u00d7";
     delBtn.setAttribute("aria-label", t("todoDelete"));
     delBtn.addEventListener("click", () => deleteTodo(todo.id));
 
@@ -67,48 +77,97 @@ const FBTodo = (function () {
   }
 
   function loadAndRender() {
+    if (!_isContextValid()) return;
     chrome.storage.sync.get(STORAGE_KEY, (data) => {
+      if (chrome.runtime.lastError) return;
       const todos = data[STORAGE_KEY] ?? DEFAULTS.todos;
       render(todos);
     });
   }
 
-  function saveTodos(todos) {
-    chrome.storage.sync.set({ [STORAGE_KEY]: todos }, loadAndRender);
+  function saveTodos(todos, done) {
+    const serialized = JSON.stringify(todos);
+    if (serialized.length > 7500) {
+      console.warn("Feed Blocker: todo list approaching sync storage limit");
+    }
+    chrome.storage.sync.set({ [STORAGE_KEY]: todos }, () => {
+      if (chrome.runtime.lastError) {
+        console.warn("Feed Blocker: failed to save todos", chrome.runtime.lastError.message);
+      }
+      loadAndRender();
+      if (done) done();
+    });
   }
 
   function addTodo(text) {
     const trimmed = String(text).trim();
     if (!trimmed) return;
-
-    chrome.storage.sync.get(STORAGE_KEY, (data) => {
-      const todos = data[STORAGE_KEY] ?? DEFAULTS.todos;
-      todos.push({
-        id: generateId(),
-        text: trimmed,
-        done: false,
-        createdAt: Date.now(),
+    _enqueueWrite((done) => {
+      chrome.storage.sync.get(STORAGE_KEY, (data) => {
+        if (chrome.runtime.lastError) { done(); return; }
+        const todos = data[STORAGE_KEY] ?? DEFAULTS.todos;
+        todos.push({
+          id: generateId(),
+          text: trimmed,
+          done: false,
+          createdAt: Date.now(),
+        });
+        saveTodos(todos, done);
       });
-      saveTodos(todos);
     });
   }
 
   function toggleTodo(id) {
-    chrome.storage.sync.get(STORAGE_KEY, (data) => {
-      const todos = data[STORAGE_KEY] ?? DEFAULTS.todos;
-      const todo = todos.find((t) => t.id === id);
-      if (todo) {
-        todo.done = !todo.done;
-        saveTodos(todos);
-      }
+    _enqueueWrite((done) => {
+      chrome.storage.sync.get(STORAGE_KEY, (data) => {
+        if (chrome.runtime.lastError) { done(); return; }
+        const todos = data[STORAGE_KEY] ?? DEFAULTS.todos;
+        const todo = todos.find((t) => t.id === id);
+        if (todo) {
+          todo.done = !todo.done;
+          saveTodos(todos, done);
+        } else {
+          done();
+        }
+      });
     });
   }
 
   function deleteTodo(id) {
-    chrome.storage.sync.get(STORAGE_KEY, (data) => {
-      const todos = (data[STORAGE_KEY] ?? DEFAULTS.todos).filter((t) => t.id !== id);
-      saveTodos(todos);
+    _enqueueWrite((done) => {
+      chrome.storage.sync.get(STORAGE_KEY, (data) => {
+        if (chrome.runtime.lastError) { done(); return; }
+        const todos = (data[STORAGE_KEY] ?? DEFAULTS.todos).filter((t) => t.id !== id);
+        saveTodos(todos, done);
+      });
     });
+  }
+
+  function _onStorageChange(changes, area) {
+    if (area === "sync" && changes[STORAGE_KEY] && document.getElementById("fb-todo-list")) {
+      render(changes[STORAGE_KEY].newValue ?? []);
+    }
+  }
+
+  function _startDarkModeObserver() {
+    if (_darkObserver) return;
+    _darkObserver = new MutationObserver(() => {
+      const el = document.getElementById(TODO_ID);
+      if (el) {
+        el.classList.toggle("fb-dark", isDarkMode());
+      }
+    });
+    _darkObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["dark"],
+    });
+  }
+
+  function _stopDarkModeObserver() {
+    if (_darkObserver) {
+      _darkObserver.disconnect();
+      _darkObserver = null;
+    }
   }
 
   function createWidget() {
@@ -122,46 +181,95 @@ const FBTodo = (function () {
     el.id = TODO_ID;
     if (isDarkMode()) el.classList.add("fb-dark");
 
-    el.innerHTML = `
-      <h2>${t("todoHeading")}</h2>
-      <div id="fb-todo-input-row">
-        <input type="text" id="fb-todo-input" placeholder="${t("todoPlaceholder")}" />
-        <button type="button" id="fb-todo-add">${t("todoAdd")}</button>
-      </div>
-      <ul id="fb-todo-list"></ul>
-      <div id="fb-todo-counter"></div>
-    `;
+    const heading = document.createElement("h2");
+    heading.textContent = t("todoHeading");
 
-    el.querySelector("#fb-todo-add").addEventListener("click", () => {
-      const input = el.querySelector("#fb-todo-input");
+    const inputRow = document.createElement("div");
+    inputRow.id = "fb-todo-input-row";
+
+    const label = document.createElement("label");
+    label.setAttribute("for", "fb-todo-input");
+    label.className = "fb-sr-only";
+    label.textContent = t("todoPlaceholder");
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = "fb-todo-input";
+    input.placeholder = t("todoPlaceholder");
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.id = "fb-todo-add";
+    addBtn.textContent = t("todoAdd");
+
+    inputRow.appendChild(label);
+    inputRow.appendChild(input);
+    inputRow.appendChild(addBtn);
+
+    const list = document.createElement("ul");
+    list.id = "fb-todo-list";
+
+    const counter = document.createElement("div");
+    counter.id = "fb-todo-counter";
+
+    el.appendChild(heading);
+    el.appendChild(inputRow);
+    el.appendChild(list);
+    el.appendChild(counter);
+
+    addBtn.addEventListener("click", () => {
       addTodo(input.value);
       input.value = "";
     });
 
-    el.querySelector("#fb-todo-input").addEventListener("keydown", (e) => {
+    input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        const input = el.querySelector("#fb-todo-input");
         addTodo(input.value);
         input.value = "";
       }
     });
 
     container.insertBefore(el, container.firstChild);
+
+    if (!_storageListener) {
+      _storageListener = _onStorageChange;
+      try { chrome.storage.onChanged.addListener(_storageListener); } catch {}
+    }
+
+    _startDarkModeObserver();
     loadAndRender();
 
     return el;
   }
 
   function inject(retries = 0) {
+    if (_injectTimer) {
+      clearTimeout(_injectTimer);
+      _injectTimer = null;
+    }
     const container = getContainer();
     if (!container) {
-      if (retries < 15) setTimeout(() => inject(retries + 1), 200);
+      if (retries < 15) {
+        _injectTimer = setTimeout(() => {
+          _injectTimer = null;
+          inject(retries + 1);
+        }, 200);
+      }
       return;
     }
     createWidget();
   }
 
   function remove() {
+    if (_injectTimer) {
+      clearTimeout(_injectTimer);
+      _injectTimer = null;
+    }
+    _stopDarkModeObserver();
+    if (_storageListener) {
+      try { chrome.storage.onChanged.removeListener(_storageListener); } catch {}
+      _storageListener = null;
+    }
     const el = document.getElementById(TODO_ID);
     if (el) el.remove();
   }
